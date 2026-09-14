@@ -1,5 +1,27 @@
 ---
 
 state: present
+zfs_pools:
+  - name: data
+    vdevs:
+      type: mirror
+      disks:
+        - /dev/sda
+        - /dev/sdb
+    properties:
+      ashift: 12
+      autotrim: "on"
+    mount_point: "/mnt/data"
+zfs_datasets:
+  - name: data/projects
+    properties:
+      compression: lz4
+      atime: "off"
+      mountpoint: /mnt/data/projects
+  - name: data/homes
+    properties:
+      compression: lz4
+      atime: "off"
+      mountpoint: /mnt/data/homes
 
 ...

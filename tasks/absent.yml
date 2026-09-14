@@ -1,8 +1,7 @@
 ---
 
-- name: Remove unused dependencies
-  become: true
-  ansible.builtin.package:
-    autoremove: true
+- name: No removal
+  ansible.builtin.debug:
+    msg: "removing persistent pools should be done manually"
 
 ...

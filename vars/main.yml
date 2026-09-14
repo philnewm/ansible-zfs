@@ -1,5 +1,32 @@
 ---
 
-ansible_role_template: "Default role name still in use."
+nfs_packages:
+  debian:
+    - linux-headers-amd64
+    - zfs-dkms
+    - zfsutils-linux
+    - zfs-zed
+
+nfs_repos:
+  - name: debian
+    uris: http://deb.debian.org/debian
+    suites:
+      - trixie
+      - trixie-updates
+    components:
+      - main
+      - contrib
+      - non-free
+      - non-free-firmware
+    signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
+  - name: debian-security
+    uris: http://deb.debian.org/debian-security
+    suites: trixie-security
+    components:
+      - main
+      - contrib
+      - non-free
+      - non-free-firmware
+    signed_by: /usr/share/keyrings/debian-archive-keyring.gpg
 
 ...
