@@ -29,6 +29,18 @@
     name: "{{ nfs_packages[ansible_facts.os_family | lower] }}"
     update_cache: true
 
+- name: Load ZFS kernel module
+  become: true
+  community.general.modprobe:
+    name: zfs
+    state: present
+
+- name: Get ZFS version
+  ansible.builtin.command:
+    cmd: zfs --version
+  changed_when: false
+  register: zfs_version_output
+
 - name: Run tools
   ansible.builtin.command:
     cmd: "zfs --version"
