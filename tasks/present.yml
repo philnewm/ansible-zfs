@@ -1,14 +1,61 @@
 ---
 
-- name: Install debian specific package_facts dependency
+- name: Ensure required repos are available
   become: true
-  when: ansible_distribution == "Debian"
-  ansible.builtin.package:
-    name: python-apt-common
+  loop: "{{ nfs_repos }}"
+  loop_control:
+    loop_var: repo
+    label: "{{ repo.name }}"
+  ansible.builtin.deb822_repository:
+    name: "{{ repo.name }}"
+    types: deb
+    uris: "{{ repo.uris }}"
+    suites: "{{ repo.suites }}"
+    components: "{{ repo.components }}"
+    signed_by: "{{ repo.signed_by }}"
     state: present
+    enabled: true
 
-# INFO This task may be obsolete for your use-case
-- name: Gather package facts
-  ansible.builtin.package_facts:
+- name: Install packages
+  become: true
+  # environment:
+  #   DEBIAN_FRONTEND: noninteractive
+  ansible.builtin.package:
+    name: "{{ nfs_packages[ansible_facts.os_family | lower] }}"
+    update_cache: true
+
+- name: Run tools
+  ansible.builtin.command:
+    cmd: "zfs --version"
+  changed_when: false
+  register: zfs_version_output
+
+- name: Verify tools
+  ansible.builtin.assert:
+    that: zfs_version_output.success
+
+- name: Create zfs pools
+  become: true
+  loop: "{{ zfs_pools }}"
+  loop_control:
+    loop_var: pool
+    label: "{{ pool.name }}"
+  community.general.zpool:
+    name: "{{ pool.name }}"
+    mountpoint: "{{ pool.mount_point }}"
+    state: present
+    pool_properties: "{{ pool.properties }}"
+    vdevs: "{{ pool.vdevs }}"
+
+- name: Create zfs datasets
+  become: true
+  loop: "{{ zfs_datasets }}"
+  loop_control:
+    loop_var: dataset
+    label: "{{ dataset.name }}"
+  community.general.zfs:
+    name: "{{ dataset.name }}"
+    state: present
+    extra_zfs_properties: "{{ dataset.properties | default({}) }}"
 
 ...

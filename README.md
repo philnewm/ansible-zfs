@@ -1,10 +1,6 @@
-# Zfs-Role
-
-[![Alma9-CI](https://github.com/philnewm/ansible-zfs/actions/workflows/alma9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-zfs/actions/workflows/alma9-ci-caller.yml)  [![Rocky9-CI](https://github.com/philnewm/ansible-zfs/actions/workflows/rocky9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-zfs/actions/workflows/rocky9-ci-caller.yml)  [![CentOSStream9-CI](https://github.com/philnewm/ansible-zfs/actions/workflows/centosstream9-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-zfs/actions/workflows/centosstream9-ci-caller.yml)  [![Debian12-CI](https://github.com/philnewm/ansible-zfs/actions/workflows/debian12-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-zfs/actions/workflows/debian12-ci-caller.yml)  [![Ubuntu2204-CI](https://github.com/philnewm/ansible-zfs/actions/workflows/ubuntu2204-ci-caller.yml/badge.svg)](https://github.com/philnewm/ansible-zfs/actions/workflows/ubuntu2204-ci-caller.yml)
+# ZFS-Role
 
 Role description
-
-This role includes a vagrant based molecule testing setup as a submodule at `molecule/`
 
 ## Structure
 
@@ -12,27 +8,19 @@ This role includes a vagrant based molecule testing setup as a submodule at `mol
 📦 ansible-zfs
  ┣ 📂 defaults
  ┃ ┗ 📜 main.yml
- ┣ 📂 files
- ┃ ┗ 📜 file_placeholder.yml
- ┣ 📂 handlers
- ┃ ┗ 📜 main.yml
  ┣ 📂 meta
  ┃ ┗ 📜 main.yml
  ┣ 📂 molecule
  ┃ ┗ 📂 default
  ┃   ┗ 📜, 📜, 📜, scenario_files
  ┣ 📂 tasks
+ ┃ ┣ 📜 absent.yml
  ┃ ┣ 📜 main.yml
  ┃ ┣ 📜 present.yml
- ┃ ┣ 📜 dependencies.yml
- ┃ ┣ 📜 absent.yml
- ┃ ┗ 📜 init.yml
- ┣ 📂 templates
- ┃ ┗ ⛩️ template.j2
+ ┃ ┗ 📜 tests.yml
  ┣ 📂 vars
  ┃ ┗ 📜 main.yml
  ┗ 🗒️ README.md
- ┗ 📓 requirements.txt
  ┗ 📓 requirements.yml
 
 ```
