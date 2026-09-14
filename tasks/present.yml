@@ -41,12 +41,6 @@
   changed_when: false
   register: zfs_version_output
 
-- name: Run tools
-  ansible.builtin.command:
-    cmd: "zfs --version"
-  changed_when: false
-  register: zfs_version_output
-
 - name: Verify tools
   ansible.builtin.assert:
     that: not zfs_version_output.failed
