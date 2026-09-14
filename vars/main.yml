@@ -7,7 +7,7 @@ nfs_packages:
     - zfsutils-linux
     - zfs-zed
 
-nfs_repos:
+zfs_repos:
   - name: debian
     uris: http://deb.debian.org/debian
     suites:

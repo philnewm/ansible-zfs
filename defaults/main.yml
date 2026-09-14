@@ -1,17 +1,19 @@
 ---
 
 state: present
+zfs_vars_file: ""
 zfs_pools:
   - name: data
+    properties:
+      ashift: 12
+      autotrim: "on"
+    mount_point: "/mnt/data"
+    force_import: false
     vdevs:
       type: mirror
       disks:
         - /dev/sda
         - /dev/sdb
-    properties:
-      ashift: 12
-      autotrim: "on"
-    mount_point: "/mnt/data"
 zfs_datasets:
   - name: data/projects
     properties:
