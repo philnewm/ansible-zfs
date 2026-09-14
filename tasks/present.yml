@@ -1,8 +1,13 @@
 ---
 
+- name: Include vars file if provided
+  when: zfs_vars_file | length > 0
+  ansible.builtin.include_vars:
+    file: "{{ zfs_vars_file }}"
+
 - name: Ensure required repos are available
   become: true
-  loop: "{{ nfs_repos }}"
+  loop: "{{ zfs_repos }}"
   loop_control:
     loop_var: repo
     label: "{{ repo.name }}"
@@ -32,7 +37,44 @@
 
 - name: Verify tools
   ansible.builtin.assert:
-    that: zfs_version_output.success
+    that: not zfs_version_output.failed
+
+- name: Check whether ZFS pool is already imported
+  become: true
+  loop: "{{ zfs_pools }}"
+  loop_control:
+    loop_var: pool
+    label: "{{ pool.name }}"
+  ansible.builtin.command:
+    cmd: "zpool list -H -o name {{ pool.name }}"
+  register: zpool_imported
+  changed_when: false
+  failed_when: false
+
+- name: Display pool import results
+  ansible.builtin.debug:
+    var: zpool_imported
+
+- name: Try to import existing ZFS pool
+  become: true
+  loop: "{{ zpool_imported.results }}"
+  loop_control:
+    loop_var: pool_import
+    label: "{{ pool_import.pool.name }}"
+  when: pool_import.rc != 0
+  ansible.builtin.command:
+    cmd: >-
+      zpool import
+      {{ '-f' if pool_import_result.pool.force_import | default(false) else '' }}
+      {{ pool_imported.pool.name }}
+  register: zpool_import
+  changed_when: zpool_import.results.rc == 0
+  failed_when: false
+
+- name: Display import results
+  when: zpool_import.changed  # noqa: no-handler
+  ansible.builtin.debug:
+    var: zpool_import
 
 - name: Create zfs pools
   become: true
@@ -42,9 +84,9 @@
     label: "{{ pool.name }}"
   community.general.zpool:
     name: "{{ pool.name }}"
+    pool_properties: "{{ pool.properties }}"
     mountpoint: "{{ pool.mount_point }}"
     state: present
-    pool_properties: "{{ pool.properties }}"
     vdevs: "{{ pool.vdevs }}"
 
 - name: Create zfs datasets
@@ -57,5 +99,18 @@
     name: "{{ dataset.name }}"
     state: present
     extra_zfs_properties: "{{ dataset.properties | default({}) }}"
+
+- name: Set dataset directory permissions
+  become: true
+  loop: "{{ zfs_datasets }}"
+  loop_control:
+    loop_var: dataset
+    label: "{{ dataset.name }}"
+  ansible.builtin.file:
+    path: "{{ dataset.properties.mountpoint }}"
+    owner: "{{ dataset.owner | default('root') }}"
+    group: "{{ dataset.group | default('root') }}"
+    mode: "{{ dataset.mode | default('0755') }}"
+    state: directory
 
 ...
