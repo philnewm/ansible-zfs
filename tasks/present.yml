@@ -71,14 +71,13 @@
   ansible.builtin.command:
     cmd: >-
       zpool import
-      {{ '-f' if pool_import_result.pool.force_import | default(false) else '' }}
-      {{ pool_imported.pool.name }}
+      {{ '-f' if pool_import.pool.force_import | default(false) else '' }}
+      {{ pool_import.pool.name }}
   register: zpool_import
-  changed_when: zpool_import.results.rc == 0
+  changed_when: zpool_import.rc == 0
   failed_when: false
 
 - name: Display import results
-  when: zpool_import.changed  # noqa: no-handler
   ansible.builtin.debug:
     var: zpool_import
 
