@@ -29,6 +29,7 @@
     name: "{{ nfs_packages[ansible_facts.os_family | lower] }}"
     update_cache: true
 
+# TODO fix for inbetween kernel update
 - name: Load ZFS kernel module
   become: true
   community.general.modprobe:
@@ -56,10 +57,6 @@
   register: zpool_imported
   changed_when: false
   failed_when: false
-
-- name: Display pool import results
-  ansible.builtin.debug:
-    var: zpool_imported
 
 - name: Try to import existing ZFS pool
   become: true
